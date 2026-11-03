@@ -1,0 +1,8 @@
+{
+  "name": "Lemon Cinema",
+  "description": "Kho lưu trữ và quản lý nhân vật AI Lemon Cinema phong cách rạp chiếu phim cổ điển sang trọng.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

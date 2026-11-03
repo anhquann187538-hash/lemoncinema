@@ -1,0 +1,117 @@
+{
+  "entities": {
+    "Character": {
+      "title": "Character",
+      "description": "A cinema-styled AI character profile in the vault",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the character",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Character title / name",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "avatarUrl": {
+          "type": "string",
+          "description": "Character poster avatar URL, SVG token, or uploaded base64 image",
+          "maxLength": 500000
+        },
+        "description": {
+          "type": "string",
+          "description": "Short logline / synopsis of character",
+          "maxLength": 500
+        },
+        "story": {
+          "type": "string",
+          "description": "Full lore, script, background story",
+          "maxLength": 10000
+        },
+        "greeting": {
+          "type": "string",
+          "description": "First message / opening line / prompt",
+          "maxLength": 5000
+        },
+        "tags": {
+          "type": "array",
+          "description": "Genre / thematic tags for the character"
+        },
+        "link": {
+          "type": "string",
+          "description": "Primary bot link",
+          "maxLength": 1000
+        },
+        "linkBG": {
+          "type": "string",
+          "description": "Alternative BG bot link",
+          "maxLength": 1000
+        },
+        "linkBL": {
+          "type": "string",
+          "description": "Alternative BL bot link",
+          "maxLength": 1000
+        },
+        "linkComment": {
+          "type": "string",
+          "description": "Discussion or comments link",
+          "maxLength": 1000
+        },
+        "saveCount": {
+          "type": "integer",
+          "description": "Number of likes / audience rating score"
+        },
+        "isNew": {
+          "type": "boolean",
+          "description": "Whether character is marked as Premiere / Early release"
+        },
+        "order": {
+          "type": "integer",
+          "description": "Display order rank in cinema hall"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or server time of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp or server time of last update"
+        }
+      },
+      "required": ["name", "saveCount", "order"]
+    },
+    "GenreSetting": {
+      "title": "GenreSetting",
+      "description": "Custom genre tags managed by cinema admin",
+      "type": "object",
+      "properties": {
+        "tags": {
+          "type": "array",
+          "description": "List of active genre tag names"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["tags"]
+    }
+  },
+  "firestore": {
+    "/characters/{characterId}": {
+      "schema": {
+        "$ref": "#/entities/Character"
+      },
+      "description": "Collection of all cinema character vault cards"
+    },
+    "/settings/{settingId}": {
+      "schema": {
+        "$ref": "#/entities/GenreSetting"
+      },
+      "description": "Settings collection for cinema configuration including genres"
+    }
+  }
+}

@@ -1,0 +1,63 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidCharacter(data) {
+      return data.keys().hasAll(['name', 'saveCount', 'order']) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+        data.saveCount is int && data.saveCount >= 0 &&
+        data.order is int &&
+        (!('avatarUrl' in data) || (data.avatarUrl is string && data.avatarUrl.size() <= 500000)) &&
+        (!('description' in data) || (data.description is string && data.description.size() <= 1000)) &&
+        (!('story' in data) || (data.story is string && data.story.size() <= 10000)) &&
+        (!('greeting' in data) || (data.greeting is string && data.greeting.size() <= 5000)) &&
+        (!('tags' in data) || (data.tags is list && data.tags.size() <= 20)) &&
+        (!('link' in data) || (data.link is string && data.link.size() <= 1000)) &&
+        (!('linkBG' in data) || (data.linkBG is string && data.linkBG.size() <= 1000)) &&
+        (!('linkBL' in data) || (data.linkBL is string && data.linkBL.size() <= 1000)) &&
+        (!('linkComment' in data) || (data.linkComment is string && data.linkComment.size() <= 1000)) &&
+        (!('isNew' in data) || (data.isNew is bool)) &&
+        (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 100)) &&
+        (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 100));
+    }
+
+    match /characters/{characterId} {
+      // Public reading for visitors
+      allow get, list: if true;
+
+      // Creation with schema validation
+      allow create: if isValidId(characterId) && isValidCharacter(incoming());
+
+      // Update for audience likes or admin edits
+      allow update: if isValidId(characterId) && isValidCharacter(incoming());
+
+      // Deletion
+      allow delete: if isValidId(characterId);
+    }
+
+    match /settings/{settingId} {
+      allow get, list: if true;
+      allow create, update: if isValidId(settingId) &&
+        incoming().keys().hasAll(['tags']) &&
+        incoming().tags is list &&
+        incoming().tags.size() <= 40;
+      allow delete: if isValidId(settingId);
+    }
+  }
+}
